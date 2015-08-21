@@ -1,0 +1,35 @@
+POJ # 1013 - Counterfeit Dollar
+
+Algorithm:
+
+l_candidates[];
+h_candidates[];
+
+for each weighing
+
+	read left, right and outcome data
+	
+	if scale is even
+		remove all items from l_candidates
+		and h_candidates that are currently
+		on the scale.
+	else if scale is down
+		remove all items from l_candidates
+		and h_candidates that are currently
+		not on the scale as well as items
+		from h_candidates that are on the left
+		side of the scale and the items that
+		are on the right side of the scale from
+		l_candidates
+	else ( scale is up )
+		remove all items from l_candidates
+		and h_candidates that are currently
+		not on the scale as well as items
+		from l_candidates that are on the left
+		side of the scale and the items that
+		are on the right side of the scale from
+		h_candidates
+	end if
+end for
+
+show remaining item from array which is solution

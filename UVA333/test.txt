@@ -1,0 +1,13 @@
+Page Data <br>
+		Page Name: index.jsp <br>
+		Request: <%= request.toString() %> <br>
+		Response: <%= response.toString() %> <br>
+		Session: <%= request.getSession().toString() %> <br>
+		ServletContext: <%= request.getServletContext().toString() %> <br>
+		Server Name: <%= request.getServerName()  %> <br>
+		Content Type: <%= request.getContentType() %> <br>
+		ServletContext context path: <%= request.getServletContext().getContextPath() %><br>
+		ServletContext server info: <%= request.getServletContext().getServerInfo() %><br>
+		Session isNew: <%= request.getSession().isNew() %><br>
+		Session creation time: <%= request.getSession().getCreationTime() %><br>
+		Session id: <%= request.getSession().getId() %><br>

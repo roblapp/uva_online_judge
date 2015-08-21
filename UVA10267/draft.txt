@@ -1,0 +1,146 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
+
+#define MAXN 252
+#define MAXL 1000
+
+char a[MAXN][MAXN];
+char name[MAXL];
+int m, n; /* col, row */
+
+
+void init()
+{
+    int i, j;
+    for ( i = 0; i < MAXN; i++ )
+        for ( j = 0; j < MAXN; j++ )
+            a[i][j] = 'O';
+}
+
+void show()
+{
+    int i, j;
+    printf("%s\n", name );
+    for ( i = 1; i <= n; i++ )
+    {
+        for ( j = 1; j <= m; j++ )
+        {
+            putchar( a[i][j] );
+        }
+        putchar('\n');
+    }
+}
+
+void v( int sr, int er, int col, char color )
+{
+    int i;
+    for ( i = sr; i <= er; i++ )
+        a[i][col] = color;
+}
+
+void h( int row, int sc, int ec, char color )
+{
+    int i;
+    for ( i = sc; i <= ec; i++ )
+        a[row][i] = color;
+}
+
+void k( int sr, int er, int sc, int ec, char color )
+{
+    int i, j;
+    for ( i = sr; i <= er; i++ )
+        for ( j = sc; j <= ec; j++ )
+            a[i][j] = color;
+}
+
+void f( int row, int col, char oc, char color )
+{
+    if ( row < 1 || row > n || col < 0 || col > m || a[row][col] != oc )
+        return;
+
+    a[row][col] = color;
+    f( row - 1, col, oc, color );
+    f( row, col - 1, oc, color );
+    f( row, col + 1, oc, color );
+    f( row + 1, col, oc, color );
+}
+
+int main()
+{
+    char c;
+    int x, y, z, w;
+
+    fp = fopen("test.txt", "r" );
+
+    while ( ( c = fgetc( fp ) ) != 'X' )
+    {
+        if ( c == 'I' )
+        {
+            fscanf(fp,"%i %i", &m, &n );
+            fgetc( fp );
+            init();
+        }
+        else if ( c == 'C' )
+        {
+            fgetc( fp );
+            init();
+        }
+        else if ( c == 'L' )
+        {
+            fscanf(fp, "%i %i", &x, &y );
+            fgetc( fp );
+            c = fgetc( fp );
+            fgetc( fp );
+            paint( y, y, x, x, c );
+        }
+        else if ( c == 'V' )
+        {
+            fscanf(fp, "%i %i %i", &x, &y, &z );
+            while ( isspace( ( c = fgetc( fp ) ) ) )
+                ;
+            fgetc( fp );
+            v( y, x, z, c );
+        }
+        else if ( c == 'H' )
+        {
+            fscanf(fp, "%i %i %i", &x, &y, &z );
+            while ( isspace( ( c = fgetc( fp ) ) ) )
+                ;
+            fgetc( fp );
+            h( y, x, z, c );
+        }
+        else if ( c == 'K' )
+        {
+            fscanf(fp, "%i %i %i %i", &x, &y, &z, &w );
+            while ( isspace( ( c = fgetc( fp ) ) ) )
+                ;
+            fgetc( fp );
+            k( y, w, x, z, c );
+
+        }
+        else if ( c == 'F' )
+        {
+            fscanf(fp, "%i %i", &x, &y );
+            fgetc( fp );
+            c = fgetc( fp );
+            fgetc( fp );
+            f( y, x, a[y][x], c );
+        }
+        else if ( c == 'S' )
+        {
+            fscanf(fp, "%s", name );
+            fgetc( fp );
+            show();
+        }
+        else
+        {
+            while ( ( c = fgetc( fp ) ) != '\n' )
+                ;
+        }
+    }
+
+    fclose( fp );
+
+    return 0;
+}

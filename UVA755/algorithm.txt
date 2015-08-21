@@ -1,0 +1,32 @@
+1
+
+12
+4873279
+ITS-EASY
+888-4567
+4873279
+0000000
+3-10-10-10
+888-GLOP
+TUT-GLOP
+967-11-11
+310-GINO
+F101010
+888-1200
+-4-8-7-3-2-7-9-
+487-3279
+
+ALGORITHM:
+
+i = 0
+for each line of input
+	n = extracted number
+	if ( number not a duplicate )
+		hash( n )
+		a[i++] = n
+
+sort array
+
+for each item in array
+	hash item
+	print item.occurrences

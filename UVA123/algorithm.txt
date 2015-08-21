@@ -1,0 +1,15 @@
+ALGORITHM:
+
+for each ignore word w do
+    hash w into hash table
+
+for each title t do
+    for each word w in t do
+        if ( w is not to be ignored )
+            create new t_entry te
+            add te to KWIC indexing array
+
+qsort KWIC indexing array
+
+for each item i in KWIC indexing array do
+    print i

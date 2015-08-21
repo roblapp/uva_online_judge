@@ -1,0 +1,211 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#define MAXV 101
+#define TRUE 1
+#define FALSE 0
+#define BLACK 0
+#define WHITE 1
+
+struct vertex
+{
+    int y;
+    struct vertex *next;
+};
+
+struct graph
+{
+    struct vertex *vertices[MAXV];
+};
+
+typedef struct vertex vertex;
+typedef struct graph graph;
+typedef int bool;
+
+graph g;
+int ne, nv, max;
+int colors[MAXV];
+int optimal[MAXV];
+
+FILE *fp;
+
+void insert_edge( int src, int dst, int dir )
+{
+    vertex *temp = ( vertex * ) malloc ( sizeof ( vertex ) );
+    temp->y = dst;
+    temp->next = g.vertices[src];
+    g.vertices[src] = temp;
+    if ( dir )
+        insert_edge( dst, src, FALSE );
+}
+
+void show()
+{
+    int i;
+    vertex *temp;
+
+    for ( i = 0; i < nv; i++ )
+    {
+        temp = g.vertices[i];
+        if ( temp != NULL )
+        {
+            printf("%i:", i );
+
+            while ( temp != NULL )
+            {
+                printf(" %i", temp->y );
+                temp = temp->next;
+            }
+            printf("\n");
+        }
+    }
+}
+
+void init()
+{
+    int i;
+    for ( i = 1; i <= nv; i++ ) colors[i] = WHITE;
+    max = 1;
+}
+
+void show_coloring()
+{
+    int i;
+    for ( i = 1; i <= nv; i++ ) printf("%i %i\n", i, colors[i] );
+}
+
+void show_optimal()
+{
+    int i;
+    int x = 0;
+    printf("%i\n", max );
+    for ( i = 1; i <= nv; i++ )
+    {
+        if ( optimal[i] == BLACK )
+        {
+            x++;
+            printf("%i", i );
+            if ( x < max )
+                putchar(' ');
+            else
+                putchar('\n');
+        }
+    }
+}
+
+bool conflict( int v )
+{
+    vertex *temp = g.vertices[v];
+
+    while ( temp != NULL )
+    {
+        if ( colors[ temp->y ] == BLACK )
+        {
+            return TRUE;
+        }
+        temp = temp->next;
+    }
+    return FALSE;
+}
+
+int nblacks()
+{
+    int i, x = 0;
+    for ( i = 1; i <= nv; i++ )
+        if ( colors[i] == BLACK )
+            x++;
+    return x;
+}
+
+void process_solution()
+{
+    int tm = nblacks();
+    if ( tm > max )
+    {
+        max = tm;
+
+        int i;
+        for ( i = 1; i <= nv; i++ ) optimal[i] = colors[i];
+    }
+}
+
+bool is_solution( int v )
+{
+    return ( v == nv );
+}
+
+void construct_candidates( int v, int c[], int *ncandidates )
+{
+    vertex *temp = g.vertices[v];
+    bool in[2];
+    int i;
+
+    for ( i = 0; i < 2; i++ ) in[i] = FALSE;
+    *ncandidates = 0;
+
+    while ( temp != NULL )
+    {
+        in[ colors[temp->y] ] = TRUE;
+        temp = temp->next;
+    }
+
+    c[*ncandidates] = WHITE;
+    *ncandidates = *ncandidates + 1;
+
+    if ( in[0] == FALSE ) /* black was not used */
+    {
+        c[*ncandidates] = BLACK;
+        *ncandidates = *ncandidates + 1;
+    }
+}
+
+void color( int v )
+{
+    int c[2];
+    int ncandidates;
+    int i;
+
+    if ( is_solution( v ) )
+    {
+        process_solution();
+    }
+    else
+    {
+        v = v + 1;
+        construct_candidates( v, c, &ncandidates );
+        for ( i = 0; i < ncandidates; i++ )
+        {
+            colors[v] = c[i];
+            color( v );
+        }
+    }
+}
+
+int main()
+{
+    int i, j, ng, x, y;
+
+    fp = fopen( "test.txt", "r" );
+
+    fscanf(fp,"%i", &ng );
+
+    for ( i = 0; i < ng; i++ )
+    {
+        /* insert edges */
+        fscanf(fp,"%i %i", &nv, &ne );
+
+        for ( j = 0; j < ne; j++ )
+        {
+            fscanf(fp,"%i %i", &x, &y );
+            insert_edge( x, y, TRUE );
+        }
+
+        init();
+        color( 0 );
+        show_optimal();
+    }
+
+    fclose( fp );
+
+    return 0;
+}

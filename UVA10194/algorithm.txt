@@ -1,0 +1,47 @@
+1. Most points earned. 
+2. Most wins. 
+3. Most goal difference (i.e. goals scored - goals against) 
+4. Most goals scored. 
+5. Less games played. 
+6. Lexicographic order.
+
+ALGORITHM:
+for each case ncase do
+	read tournament name
+	i = 0
+	for each team tn do
+		tn <--- read team name
+		hash( tn, i )
+		a[i].name = tn
+		i <--- i + 1		
+	end for
+	j = 0
+	for each game gn do
+		tno <--- read team name 1
+		sco <--- team ones score
+		tnt <--- read team name 2
+		sct <--- team twos score
+		x <--- get_value( tno )
+		y <--- get_value( tnt )
+		a[x].goals_scored += sco
+		a[y].goals_against += sco
+		a[x].goals_against += sct
+		a[y].goals_scored += sct
+		if ( sco > sct )
+			a[x].wins <--- a[x].wins + 1
+			a[y].loses <--- a[y].loses + 1
+		else if ( sco < sct )
+			a[x].loses <--- a[x].loses + 1
+			a[y].wins <--- a[y].wins + 1
+		else
+			a[x].ties = a[x].ties + 1
+			a[y].ties = a[y].ties + 1
+		a[x].goal_difference = a[x].goals_scored - a[x].goals_against
+	end for
+	sort( a )
+	for each item in a do
+		print item
+	end for
+end for
+
+		

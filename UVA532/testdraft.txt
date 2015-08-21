@@ -1,0 +1,125 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
+#include <limits.h>
+#include <string.h>
+
+#define MAXR 30
+#define MAXC 30
+#define MAXL 30
+#define COST 1
+#define TRUE 1
+#define FALSE 0
+
+char a[MAXR][MAXC][MAXL];
+int sx, sy, ex, ey, sz, ez, min_cost, nl, nr, nc;
+int discovered[MAXR][MAXC][MAXL];
+
+FILE *fp;
+
+int map( int i, int j, int k )
+{
+    return ( i * MAXC + j ) + ( k * MAXR*MAXC );
+}
+
+int is_end( int i, int j, int k )
+{
+    return ( i == ex && j == ey && k == ez );
+}
+
+void show()
+{
+    int i, j, k;
+    for ( k = 0; k < nl; k++ )
+    {
+        for ( i = 0; i < nr; i++ )
+        {
+            for ( j = 0; j < nc; j++ )
+            {
+                putchar( a[i][j][k] );
+            }
+            putchar('\n');
+        }
+        putchar('\n');
+    }
+    putchar('\n');
+}
+
+void dfs( int i, int j, int k, int cost )
+{
+
+    if ( i < 0 || i >= nr || j < 0 || j >= nc || k < 0 || k >= nl || a[i][j][k] == '#' || discovered[i][j][k] )
+    {
+        return;
+    }
+
+    if ( is_end( i, j, k ) )
+    {
+        if ( cost < min_cost )
+            min_cost = cost;
+        return;
+    }
+
+    discovered[i][j][k] = TRUE;
+
+    dfs( i - 1, j, k, cost + COST );
+    dfs( i, j - 1, k, cost + COST );
+    dfs( i, j + 1, k, cost + COST );
+    dfs( i + 1, j, k, cost + COST );
+    dfs( i, j, k + 1, cost + COST );
+    dfs( i, j, k - 1, cost + COST );
+}
+
+void getline()
+{
+    int i, j, k;
+    char c;
+
+    for ( k = 0; k < nl; k++ )
+    {
+        fgetc( fp );
+
+        for ( i = 0; i < nr; i++ )
+        {
+            for ( j = 0; j < nc; j++ )
+            {
+                c = fgetc( fp );
+                a[i][j][k] = c;
+                if ( c == 'S' )
+                {
+                    sx = i;
+                    sy = j;
+                    sz = k;
+                }
+                else if ( c == 'E' )
+                {
+                    ex = i;
+                    ey = j;
+                    ez = k;
+                }
+            }
+            fgetc( fp );
+        }
+    }
+}
+
+int main()
+{
+    fp = fopen( "test.txt", "r" );
+
+    while ( fscanf(fp, "%i %i %i", &nl, &nr, &nc ) == 3 && ( nl != 0 || nr != 0 || nc != 0 ) )
+    {
+        memset( discovered, 0, sizeof( discovered ) );
+        getline();
+        min_cost = INT_MAX;
+        dfs( sx, sy, sz, 0 );
+        if ( min_cost == INT_MAX )
+            printf("Trapped!\n");
+        else
+            printf("Escaped in %i minute(s).\n", min_cost );
+    }
+
+    fclose( fp );
+
+    return 0;
+}

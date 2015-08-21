@@ -1,0 +1,389 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+/* ACCEPTED 0.015 */
+
+/* I got accepted, but this program is too long and too much code for such a simple program. */
+
+#define MAXV 100
+#define TRUE 1
+#define FALSE 0
+
+/**< structures */
+struct node
+{
+    int x;
+    int y;
+    struct node *next;
+};
+
+struct queue
+{
+    struct node *head;
+    struct node *tail;
+    int size;
+};
+
+/**< type definitions */
+typedef struct node node;
+typedef struct queue queue;
+
+char a[MAXV][MAXV];
+int disc[MAXV][MAXV];
+
+node *nalloc( int x, int y )
+{
+    node *temp = ( node * ) malloc ( sizeof ( node ) );
+    temp->x = x;
+    temp->y = y;
+    temp->next = NULL;
+    return temp;
+}
+
+void enqueue( queue *q, int x, int y )
+{
+    node *temp = nalloc( x, y );
+
+    if ( q->head == NULL )
+        q->head = temp;
+    else
+        q->tail->next = temp;
+
+    q->tail = temp;
+    q->size = q->size + 1;
+}
+
+void dequeue( queue *q, int *px, int *py )
+{
+    if ( q->head != NULL )
+    {
+        node *temp = q->head;
+        *px = temp->x;
+        *py = temp->y;
+        q->head = q->head->next;
+
+        if ( q->head == NULL )
+            q->tail = NULL;
+        q->size = q->size - 1;
+    }
+}
+
+void init_q( queue *q )
+{
+    q->head = q->tail = NULL;
+    q->size = 0;
+}
+
+int is_empty( queue *q )
+{
+    return ( q->size == 0 );
+}
+
+void init_bfs( int m, int n )
+{
+    int i, j;
+    for ( i = 0; i  < m; i++ )
+        for ( j = 0; j < n; j++ )
+            disc[i][j] = FALSE;
+}
+
+void get_neighbors( queue *q, int i, int j, int m, int n )
+{
+    if ( i == 0 )
+    {
+        if ( j == 0 )
+        {
+            if ( a[i+1][j+1] == '@' && !disc[i+1][j+1] )
+            {
+                enqueue( q, i + 1, j + 1 );
+                disc[i+1][j+1] = TRUE;
+            }
+
+            if ( a[i][j+1] == '@' && !disc[i][j+1] )
+            {
+                enqueue( q, i, j + 1 );
+                disc[i][j+1] = TRUE;
+            }
+
+            if ( a[i+1][j] == '@' && !disc[i+1][j] )
+            {
+                enqueue( q, i + 1, j );
+                disc[i+1][j] = TRUE;
+            }
+        }
+        else if ( j < n )
+        {
+            if ( a[i][j-1] == '@' && !disc[i][j-1] )
+            {
+                enqueue( q, i, j - 1 );
+                disc[i][j-1] = TRUE;
+            }
+            if ( a[i+1][j-1] == '@' && !disc[i+1][j-1] )
+            {
+                enqueue( q, i + 1, j - 1 );
+                disc[i+1][j-1] = TRUE;
+            }
+            if ( a[i+1][j+1] == '@' && !disc[i+1][j+1] )
+            {
+                enqueue( q, i + 1, j + 1 );
+                disc[i+1][j+1] = TRUE;
+            }
+            if ( a[i][j+1] == '@' && !disc[i][j+1] )
+            {
+                enqueue( q, i, j + 1 );
+                disc[i][j+1] = TRUE;
+            }
+            if ( a[i+1][j] == '@' && !disc[i+1][j] )
+            {
+                enqueue( q, i + 1, j );
+                disc[i+1][j] = TRUE;
+            }
+        }
+        else /* j == n */
+        {
+            if ( a[i][j-1] == '@' && !disc[i][j-1] )
+            {
+                enqueue( q, i, j - 1 );
+                disc[i][j-1] = TRUE;
+            }
+            if ( a[i+1][j-1] == '@' && !disc[i+1][j-1] )
+            {
+                enqueue( q, i + 1, j - 1 );
+                disc[i+1][j-1] = TRUE;
+            }
+            if ( a[i+1][j] == '@' && !disc[i+1][j] )
+            {
+                 enqueue( q, i + 1, j );
+                 disc[i+1][j] = TRUE;
+            }
+        }
+    }
+    else if ( i < m )
+    {
+        if ( j == 0 )
+        {
+            if ( a[i+1][j+1] == '@' && !disc[i+1][j+1] )
+            {
+                enqueue( q, i + 1, j + 1 );
+                disc[i+1][j+1] = TRUE;
+            }
+            if ( a[i][j+1] == '@' && !disc[i][j+1] )
+            {
+                enqueue( q, i, j + 1 );
+                disc[i][j+1] = TRUE;
+            }
+            if ( a[i-1][j] == '@' && !disc[i-1][j] )
+            {
+                enqueue( q, i - 1, j );
+                disc[i-1][j] = TRUE;
+            }
+            if ( a[i+1][j] == '@' && !disc[i+1][j] )
+            {
+                enqueue( q, i + 1, j );
+                disc[i+1][j] = TRUE;
+            }
+            if ( a[i-1][j+1] == '@' && !disc[i-1][j+1] )
+            {
+                enqueue( q, i - 1, j + 1 );
+                disc[i-1][j+1] = TRUE;
+            }
+        }
+        else if ( j < n)
+        {
+            if ( a[i-1][j-1] == '@' && !disc[i-1][j-1] )
+            {
+                enqueue( q, i - 1, j - 1 );
+                disc[i-1][j-1] = TRUE;
+            }
+            if ( a[i][j-1] == '@' && !disc[i][j-1] )
+            {
+                enqueue( q, i, j - 1 );
+                disc[i][j-1] = TRUE;
+            }
+            if ( a[i+1][j-1] == '@' && !disc[i+1][j-1] )
+            {
+                enqueue( q, i + 1, j - 1 );
+                disc[i+1][j-1] = TRUE;
+            }
+            if ( a[i+1][j+1] == '@' && !disc[i+1][j+1] )
+            {
+                enqueue( q, i + 1, j + 1 );
+                disc[i+1][j+1] = TRUE;
+            }
+            if ( a[i][j+1] == '@' && !disc[i][j+1] )
+            {
+                enqueue( q, i, j + 1 );
+                disc[i][j+1] = TRUE;
+            }
+            if ( a[i-1][j] == '@' && !disc[i-1][j] )
+            {
+                enqueue( q, i - 1, j );
+                disc[i-1][j] = TRUE;
+            }
+            if ( a[i+1][j] == '@' && !disc[i+1][j] )
+            {
+                enqueue( q, i + 1, j );
+                disc[i+1][j] = TRUE;
+            }
+            if ( a[i-1][j+1] == '@' && !disc[i-1][j+1] )
+            {
+                enqueue( q, i - 1, j + 1 );
+                disc[i-1][j+1] = TRUE;
+            }
+        }
+        else /* j == n */
+        {
+            if ( a[i-1][j-1] == '@' && !disc[i-1][j-1] )
+            {
+                enqueue( q, i - 1, j - 1 );
+                disc[i-1][j-1] = TRUE;
+            }
+            if ( a[i][j-1] == '@' && !disc[i][j-1] )
+            {
+                enqueue( q, i, j - 1 );
+                disc[i][j-1] = TRUE;
+            }
+            if ( a[i+1][j-1] == '@' && !disc[i+1][j-1] )
+            {
+                enqueue( q, i + 1, j - 1 );
+                disc[i+1][j-1] = TRUE;
+            }
+            if ( a[i-1][j] == '@' && !disc[i-1][j] )
+            {
+                enqueue( q, i - 1, j );
+                disc[i-1][j] = TRUE;
+            }
+            if ( a[i+1][j] == '@' && !disc[i+1][j] )
+            {
+                enqueue( q, i + 1, j );
+                disc[i+1][j] = TRUE;
+            }
+        }
+    }
+    else /* i == n */
+    {
+        if ( j == 0 )
+        {
+            if ( a[i][j+1] == '@' && !disc[i][j+1] )
+            {
+                enqueue( q, i, j + 1 );
+                disc[i][j+1] = TRUE;
+            }
+            if ( a[i-1][j] == '@' && !disc[i-1][j] )
+            {
+                enqueue( q, i - 1, j );
+                disc[i-1][j] = TRUE;
+            }
+            if ( a[i-1][j+1] == '@' && !disc[i-1][j+1] )
+            {
+                enqueue( q, i - 1, j + 1 );
+                disc[i-1][j+1] = TRUE;
+            }
+        }
+        else if ( j < n )
+        {
+            if ( a[i-1][j-1] == '@' && !disc[i-1][j-1] )
+            {
+                enqueue( q, i - 1, j - 1 );
+                disc[i-1][j-1] = TRUE;
+            }
+            if ( a[i][j-1] == '@' && !disc[i][j-1] )
+            {
+                enqueue( q, i, j - 1 );
+                disc[i][j-1] = TRUE;
+            }
+            if ( a[i][j+1] == '@' && !disc[i][j+1] )
+            {
+                enqueue( q, i, j + 1 );
+                disc[i][j+1] = TRUE;
+            }
+            if ( a[i-1][j] == '@' && !disc[i-1][j] )
+            {
+                enqueue( q, i - 1, j );
+                disc[i-1][j] = TRUE;
+            }
+            if ( a[i-1][j+1] == '@' && !disc[i-1][j+1] )
+            {
+                enqueue( q, i - 1, j + 1 );
+                disc[i-1][j+1] = TRUE;
+            }
+        }
+        else /* j == n */
+        {
+            if ( a[i-1][j-1] == '@' && !disc[i-1][j-1] )
+            {
+                enqueue( q, i - 1, j - 1 );
+                disc[i-1][j-1] = TRUE;
+            }
+            if ( a[i][j-1] == '@' && !disc[i][j-1] )
+            {
+                enqueue( q, i, j - 1 );
+                disc[i][j-1] = TRUE;
+            }
+            if ( a[i-1][j] == '@' && !disc[i-1][j] )
+            {
+                enqueue( q, i - 1, j );
+                disc[i-1][j] = TRUE;
+            }
+        }
+    }
+}
+
+void bfs( int x, int y, int m, int n )
+{
+    queue q;
+
+    int i, j;
+
+    init_q( &q );
+
+    enqueue( &q, x, y );
+    disc[x][y] = TRUE;
+
+    while ( !is_empty( &q ) )
+    {
+        dequeue( &q, &i, &j );
+
+        get_neighbors( &q, i, j, m, n );
+    }
+}
+
+void solve( int m, int n )
+{
+    int i, j, x = 0;
+
+    init_bfs( m, n );
+
+    for ( i = 0; i  < m; i++ )
+    {
+        for ( j = 0; j < n; j++ )
+        {
+            if ( a[i][j] == '@' && !disc[i][j] )
+            {
+                bfs( i, j, m, n );
+                x++;
+            }
+        }
+    }
+    printf("%i\n", x );
+}
+
+int main()
+{
+    int i, j, m, n;
+
+    while ( scanf("%i %i", &m, &n ) == 2 && ( m != 0 && n != 0 ) )
+    {
+        getchar();
+        for ( i = 0; i < m; i++ )
+        {
+            for ( j = 0; j < n; j++ )
+                a[i][j] = getchar();
+
+            getchar();
+        }
+        solve( m, n );
+    }
+
+    return 0;
+}

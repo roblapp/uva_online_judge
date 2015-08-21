@@ -1,0 +1,284 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
+#include <string.h>
+
+#define MAXWORDS 1000
+#define MAXL 200
+#define ALPHA 26
+#define MAXWL 20
+#define TRUE 1
+#define FALSE 0
+#define IN 1
+#define OUT 0
+#define FAIL -1
+#define OFFSET 97
+#define readc fgetc( fp )
+
+typedef int bool;
+
+char dictionary[MAXWORDS][MAXL];
+int dlengths[MAXWORDS];
+int ndw;
+
+char input[MAXL][MAXL];
+int inputlengths[MAXL];
+int niw;
+int nic;
+
+char map[ALPHA]; /* the mapping from input to output */
+char parent[ALPHA]; /* making sure the function is injective */
+
+bool eofread;
+
+FILE *fp;
+
+void readint( int *n )
+{
+    char c;
+    *n = 0;
+    while ( ( c = readc ) != EOF && c != '\n' )
+        if ( isdigit( c ) )
+            *n = ( 10 * ( * n ) ) + c - '0';
+}
+
+int getline( char s[] )
+{
+    if ( eofread == TRUE ) return FAIL;
+
+    char c;
+    int i = 0;
+
+    while ( ( c = readc ) != EOF && c != '\n' )
+        s[i++] = c;
+
+    s[i] = '\0';
+
+    if ( c == EOF ) eofread = TRUE;
+
+    return i;
+}
+
+int split( char line[] )
+{
+    int i = 0, j = 0, wc = -1, st = OUT;
+
+    while ( line[i] )
+    {
+        if ( isalpha( line[i] ) )
+        {
+            if ( st == OUT )
+                wc++;
+            st = IN;
+            input[wc][j] = line[i];
+            j++;
+        }
+        else
+        {
+            if ( st == IN )
+            {
+                input[wc][j] = '\0';
+                inputlengths[wc] = j;
+            }
+
+            st = OUT;
+            j = 0;
+        }
+        i++;
+    }
+
+    if ( st == IN )
+    {
+        input[wc][j] = '\0';
+        inputlengths[wc] = j;
+    }
+
+    return wc + 1;
+}
+
+void show_split()
+{
+    int i;
+    for ( i = 0; i < niw; i++ )
+        printf("%i %s %i\n", i, input[i], inputlengths[i] );
+}
+
+void init()
+{
+    int i;
+    for ( i = 0; i < ALPHA; i++ )
+    {
+        map[i] = -1 ;
+        parent[i] = -1;
+    }
+}
+
+void construct_candidates( int k, int c[], int *ncandidates )
+{
+    int i;
+    *ncandidates = 0;
+    for ( i = 0; i < ndw; i++ )
+    {
+        if ( dlengths[i] == inputlengths[k] )
+        {
+            c[*ncandidates] = i;
+            *ncandidates = *ncandidates + 1;
+        }
+    }
+}
+
+bool backtrack( int k )
+{
+    int i, j, ncandidates;
+    int push;
+    int c[MAXWORDS];
+    char temp[ALPHA];
+    bool failed;
+
+    if ( k == niw )
+    {
+        return TRUE;
+    }
+
+    construct_candidates( k, c, &ncandidates );
+
+    for ( i = 0; i < ncandidates; i++ ) /* for each candidate */
+    {
+        failed = FALSE;
+        push = 0;
+
+        for ( j = 0; j < inputlengths[k] && !failed; j++ )
+        {
+            /* c[i] contains an index of the dictionary */
+            /* we want to change input[k][j] to dictionary[ c[i] ][j] */
+            if ( map[ input[k][j] - OFFSET ] == -1 && parent[ dictionary[ c[i] ][j] - OFFSET  ] == -1 ) /* not yet mapped */
+            {
+                map[ input[k][j] - OFFSET ] = dictionary[ c[i] ][j];
+                parent[ dictionary[ c[i] ][j] - OFFSET ] = input[k][j];
+                temp[push++] = input[k][j];
+                temp[push++] = dictionary[ c[i] ][j];
+            }
+            else if ( map[ input[k][j] - OFFSET ] == dictionary[ c[i] ][j]
+                     &&
+                     parent[ dictionary[ c[i] ][j] - OFFSET ] == input[k][j] )
+            {
+                /* already been mapped, but to the "correct" character */
+                continue;
+            }
+            else /* there is a failure */
+            {
+                failed = TRUE;
+            }
+        }
+
+        if ( !failed && backtrack( k + 1 ) )
+        {
+            return TRUE;
+        }
+        else
+        {
+            for ( j = 0; j < push; j++ )
+            {
+                map[ temp[j] - OFFSET ] = -1;
+                parent[ temp[j] - OFFSET ] = -1;
+            }
+        }
+    }
+
+    return FALSE;
+}
+
+void process( char line[] )
+{
+    int i;
+    for ( i = 0; i < nic; i++ )
+    {
+        if ( isalpha( line[i] ) )
+            putchar( map[ line[i] - OFFSET ] );
+        else
+            putchar( line[i] );
+    }
+    putchar('\n');
+}
+
+void failed( char line[] )
+{
+    int i;
+    for ( i = 0; i < nic; i++ )
+    {
+        if ( isalpha( line[i] ) )
+            putchar('*');
+        else
+            putchar( line[i] );
+    }
+    putchar('\n');
+}
+
+void swap( char *a, char *b )
+{
+    char *temp = a;
+    *a = *b;
+    b = temp;
+}
+
+void sort()
+{
+    int i, j, key;
+
+    for ( i = 0; i < niw - 1; i++ )
+    {
+        key = i;
+
+        for ( j = i + 1; j < niw; j++ )
+        {
+            if ( strlen( input[key] ) < strlen( input[j] ) )
+            {
+                key = j;
+            }
+        }
+        if ( key != i )
+        {
+            char temp[ALPHA];
+            strcpy( temp, input[i] );
+            strcpy( input[i], input[key] );
+            strcpy( input[key], temp );
+        }
+    }
+}
+
+int main()
+{
+    char line[MAXL];
+    int i;
+
+    fp = fopen("test.txt" ,"r" );
+
+    eofread = FALSE;
+
+    readint( &ndw );
+
+    for ( i = 0; i < ndw; i++ )
+    {
+        dlengths[i] = getline( dictionary[i] );
+    }
+
+    while ( ( nic = getline( line ) ) != FAIL )
+    {
+        niw = split( line );
+
+        sort();
+
+        show_split();
+
+        init();
+
+        if ( backtrack( 0 ) )
+            process( line );
+        else
+            failed( line );
+    }
+
+    fclose( fp );
+
+    return 0;
+}

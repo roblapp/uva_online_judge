@@ -1,0 +1,221 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
+
+#define MAXWORDS 1000
+#define MAXLINE 100
+#define MAXLENGTH 16
+#define TRUE 1
+#define FALSE 0
+#define MAXALPHA 26
+#define IN 1
+#define OUT 0
+
+typedef int bool;
+
+char line[MAXLINE + 1];
+char data[MAXLINE][MAXLENGTH + 1];
+char dictionary[MAXWORDS][MAXLENGTH + 1];
+int ndw; /* number dictionary words */
+int niw;
+int nic; /* number input characters */
+
+int diclen[MAXWORDS];
+int datalen[MAXWORDS];
+
+bool used[MAXALPHA]; /* one location for each of the 26 letters of the alphabet */
+char map[MAXALPHA];
+
+bool eofread = FALSE;
+
+
+void init()
+{
+    int i;
+    for ( i = 0; i < MAXALPHA; i++ )
+    {
+        map[i] = i + 'a';
+        used[i] = FALSE;
+    }
+}
+
+void readint( int *n )
+{
+    char c;
+    *n = 0;
+    while ( ( c = getchar() ) != EOF && c != '\n' )
+        if ( isdigit( c ) )
+            *n = ( 10 * ( * n ) ) + c - '0';
+}
+
+int getline( char s[] )
+{
+    char c;
+    int i = 0;
+
+    while ( ( c = getchar() ) != EOF && c != '\n' )
+        s[i++] = c;
+
+    s[i] = '\0';
+
+    if ( c == EOF )
+        eofread = TRUE;
+    return i;
+}
+
+int split( char line[] )
+{
+    int i = 0, j = 0, wc = -1, st = OUT;
+
+    while ( line[i] )
+    {
+        if ( isalpha( line[i] ) )
+        {
+            if ( st == OUT )
+                wc++;
+            st = IN;
+            data[wc][j] = line[i];
+            j++;
+        }
+        else
+        {
+            if ( st == IN )
+            {
+                data[wc][j] = '\0';
+                datalen[wc] = j;
+            }
+
+            st = OUT;
+            j = 0;
+        }
+        i++;
+    }
+
+    if ( st == IN )
+    {
+        data[wc][j] = '\0';
+        datalen[wc] = j;
+    }
+
+    return wc + 1;
+}
+
+void process_solution()
+{
+    int i;
+    for ( i = 0; i < nic; i++ )
+        if ( isalpha( line[i] ) )
+            putchar( map[ line[i] - 'a' ] );
+        else
+            putchar( line[i] );
+    putchar('\n');
+}
+
+void failed_solution()
+{
+    int i;
+    for ( i = 0; i < nic; i++ )
+        if ( isalpha( line[i] ) )
+            putchar('*');
+        else
+            putchar( line[i] );
+    putchar('\n');
+}
+
+void construct_candidates( int k, int c[], int *ncandidates )
+{
+    int i;
+    *ncandidates = 0;
+
+    for ( i = 0; i < ndw; i++ )
+    {
+        if ( diclen[i] == datalen[k] ) /* if items are the same length */
+        {
+            c[*ncandidates] = i;
+            *ncandidates = *ncandidates + 1;
+        }
+    }
+}
+
+bool decrypt( int k )
+{
+    int i, j, ncandidates;
+    int c[MAXLINE]; /* c contains the indexes of strings in the dictionary that are candidates*/
+    bool failed;
+
+    if ( k == niw )
+    {
+        return TRUE;
+    }
+
+    construct_candidates( k, c, &ncandidates );
+
+    for ( i = 0; i < ncandidates; i++ )
+    {
+        failed = FALSE;
+
+        /* datalen[k] is the same as diclen[ c[i] ] */
+        for ( j = 0; j < datalen[k]; j++ )
+        {
+            if ( used[ data[k][j] - 'a' ] == TRUE && map[ data[k][j] - 'a' ] == dictionary[ c[i] ][j] )
+            {
+                /* okay so far */
+            }
+            else if ( used[ data[k][j] - 'a' ] == FALSE )
+            {
+                map[ data[k][j] - 'a' ] = dictionary[ c[i] ][j];
+                used[ data[k][j] - 'a' ] = TRUE;
+            }
+            else
+            {
+                failed = TRUE;
+                break;
+            }
+        }
+
+        if ( failed == FALSE && decrypt( k + 1 ) == TRUE )
+        {
+            return TRUE;
+        }
+        else /* undo this decryption scheme */
+        {
+            for ( j = 0; j < datalen[k]; j++ )
+            {
+                map[ data[k][j] - 'a' ] = j + 'a';
+                used[ data[k][j] - 'a' ] = FALSE;
+            }
+        }
+    }
+
+    return FALSE;
+}
+
+void show()
+{
+    int i;
+
+    for ( i = 0; i < nic; i++ )
+    {
+        putchar( map[ line[i] - 'a' ] );
+    }
+    putchar('\n');
+}
+
+int main()
+{
+    int i;
+
+    readint( &ndw );
+
+    for ( i = 0; i < ndw; i++ )
+    {
+        diclen[i] = getline( dictionary[i] );
+    }
+
+    while ( eofread == FALSE )
+    {
+        nic = getline( line );
+    }
+
+    return 0;
+}
