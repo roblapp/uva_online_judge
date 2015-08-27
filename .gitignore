@@ -1,3 +1,6 @@
+#Local files
+UVA_SCRAP/**
+
 # Object files
 *.o
 *.ko
