@@ -3,6 +3,10 @@
 
 #define MAXN 100
 
+/*
+ACCEPTED 0.003s
+*/
+
 using namespace std;
 
 int main() {
