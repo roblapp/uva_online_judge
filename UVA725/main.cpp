@@ -1,6 +1,11 @@
 #include <iostream>
 #include <cstring>
 
+/*
+ACCEPTED 0.009s
+Note: Before I made 1 optimization, the first submission was 0.259s!!!
+*/
+
 using namespace std;
 
 bool isPandigitalPair(int a, int b, bool isFourDigits) {
