@@ -7,29 +7,21 @@ bool isPandigitalPair(int a, int b, bool isFourDigits) {
     bool m[10];
     int temp;
     memset(m, 0, sizeof(m));
-    if (isFourDigits) {
-        m[0] = true;
-    }
+    if (isFourDigits) { m[0] = true; }
     while (a > 0) {
         temp = a % 10;
-        if (m[temp]) {
-            return false;
-        }
+        if (m[temp]) { return false; }
         m[temp] = true;
         a /= 10;
     }
     while (b > 0) {
         temp = b % 10;
-        if (m[temp]) {
-            return false;
-        }
+        if (m[temp]) { return false; }
         m[temp] = true;
         b /= 10;
     }
     for (int i = 0; i < 10; i++) {
-        if (!m[i]) {
-            return false;
-        }
+        if (!m[i]) { return false; }
     }
     return true;
 }
