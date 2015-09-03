@@ -12,9 +12,6 @@
 /*
 With union find data structure - run time 0.152s
 with graph data structure running an exit early bfs - 1.232s!!!
-
-I learned my lesson here!
-
 */
 
 #define MAXV 10000
