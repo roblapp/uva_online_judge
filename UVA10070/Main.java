@@ -1,6 +1,14 @@
 import java.math.BigInteger;
 import java.util.Scanner;
  
+ /*
+ ACCEPTED 0.306s
+ Algorithm: Ad hoc/BigInteger
+ Description: Just use Java's BigInteger class to perform simple
+ checks to determine what type of year each input token is.
+ Tips: MUST use BigInteger!!! Some numbers are between 1000 and 2000
+ digits.
+ */
  
 public class Main {
   final static BigInteger FOUR = new BigInteger("4");
