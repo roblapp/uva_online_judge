@@ -6,8 +6,7 @@
 
 /* algorithm: sorting
 Sort the entries by decreasing ratio (fine/day) and then
-by lexicographically in the order they appeared in the
-input.
+in the order they appeared in the input.
 */
 
 #define in cin
