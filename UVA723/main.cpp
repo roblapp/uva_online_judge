@@ -8,6 +8,7 @@
 #define COMMENT_0 1
 #define COMMENT_1 2
 #define STRING_LITERAL 3
+#define read fgetc(fp)
 
 using namespace std;
 
@@ -24,11 +25,12 @@ bool isEmpty(char *s, int len) {
 }
 
 int main() {
+    FILE *fp = fopen("test.txt", "r");
     char buffer[MAXLINE], c, prev = 0;
     int pos = 0, state = DEFAULT;
     bool stringLiteral = false;
     memset(buffer, 0, sizeof(buffer));
-    while ((c = getchar()) != EOF) {
+    while ((c = read) != EOF) {
         if (state == COMMENT_0) { /* Ignore until a '*)' is read */
             if (c == ')' && prev == '*') {
                 state = DEFAULT;
@@ -66,11 +68,14 @@ int main() {
                 }
                 pos = prev = 0;
                 buffer[0] = 0;
+            } else if (state == STRING_LITERAL && c == '\n') {
+                ;
             } else {
                 buffer[pos++] = c;
             }
         }
         prev = c;
     }
+    fclose(fp);
     return 0;
 }
