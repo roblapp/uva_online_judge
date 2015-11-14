@@ -1,60 +1,14 @@
-White wins.
-White wins.
-White wins.
-Black wins.
-White wins.
-Tie.
-White wins.
-White wins.
-White wins.
-Black wins.
-Black wins.
-Tie.
-Tie.
-Black wins.
-White wins.
-Black wins.
-Black wins.
-White wins.
-Tie.
-Black wins.
-White wins.
-Black wins.
-Black wins.
-Tie.
-Tie.
-White wins.
-White wins.
-White wins.
-White wins.
-Black wins.
-White wins.
-White wins.
-White wins.
-White wins.
-Black wins.
-Black wins.
-Black wins.
-Tie.
-White wins.
-Tie.
-Black wins.
-Black wins.
-Black wins.
-Black wins.
-Tie.
-White wins.
-Black wins.
-Tie.
-Tie.
-Black wins.
-Black wins.
-Black wins.
-Tie.
-Tie.
-Black wins.
-Black wins.
-Tie.
-Black wins.
-Black wins.
-Tie.
+#include <iostream>
+#include <fstream>
+
+//#define read cin
+
+using namespace std;
+
+int main() {
+    ifstream read("test.txt");
+
+
+    read.close();
+    return 0;
+}
