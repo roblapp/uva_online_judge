@@ -1,9 +1,9 @@
 #include <iostream>
 #include <fstream>
 
-//#define read cin
-
 using namespace std;
+
+//#define read cin
 
 int main() {
     ifstream read("test.txt");
