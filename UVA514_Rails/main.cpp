@@ -6,7 +6,6 @@ Accepted: 0.106s
 Description: data structures - stacks
 Info: I need to think of a faster way of doing this problem. It is not
 possible to arrange the coaches if you have the following situation:
-
 X, ... Y, ... Z
 where X > Y and X > Z, but Y < Z
 */
@@ -31,10 +30,7 @@ int main() {
                 read >> x;
                 a[i++] = x;
             }
-            if (n <= 2) {
-                cout << "Yes" << endl;
-            } else {
-                bool isYes = true;
+            bool isYes = true;
                 int k = 1;
                 stack<int> s;
                 for (int j = 0; isYes && j < n; j++) {
@@ -55,7 +51,6 @@ int main() {
                     cout << "Yes" << endl;
                 else
                     cout << "No" << endl;
-            }
         }
         cout << endl;
     }
