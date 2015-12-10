@@ -7,7 +7,7 @@ public:
     UnionFind(int _n) {
         for (int i = 0; i <= n; i++) {
             parent[i] = i;
-            componentSize[i] = i;
+            componentSize[i] = 1;
         }
         n = _n;
         numberOfDisjointSets = n;
