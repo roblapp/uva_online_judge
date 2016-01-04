@@ -3,34 +3,29 @@
 #include <cstdio>
 #include <cctype>
 
-#define MAXLINE 1000
+#define MAXLINE 100000
 #define DEFAULT 0
 #define COMMENT_0 1
 #define COMMENT_1 2
 #define STRING_LITERAL 3
-#define read fgetc(fp)
 
 using namespace std;
 
 bool isEmpty(char *s, int len) {
-    if (len == 0) {
+    if (len == 0)
         return true;
-    }
-    for (int i = 0; i < len; i++) {
-        if (!isspace(s[i])) {
+    for (int i = 0; i < len; i++)
+        if (!isspace(s[i]))
             return false;
-        }
-    }
     return true;
 }
 
 int main() {
-    FILE *fp = fopen("test.txt", "r");
     char buffer[MAXLINE], c, prev = 0;
     int pos = 0, state = DEFAULT;
     bool stringLiteral = false;
     memset(buffer, 0, sizeof(buffer));
-    while ((c = read) != EOF) {
+    while ((c = getchar()) != EOF) {
         if (state == COMMENT_0) { /* Ignore until a '*)' is read */
             if (c == ')' && prev == '*') {
                 state = DEFAULT;
@@ -42,7 +37,7 @@ int main() {
         } else {
             if (c == ' ') {
                 if (state != STRING_LITERAL && prev == ' ') {
-                /* Ignore */
+                    ;     /* Ignore */
                 } else { /* The previous char is NOT a blank */
                     buffer[pos++] = c;
                 }
@@ -76,6 +71,5 @@ int main() {
         }
         prev = c;
     }
-    fclose(fp);
     return 0;
 }
