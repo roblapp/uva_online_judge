@@ -1,15 +1,15 @@
 class UnionFind {
-public:
-    int parent[MAXN];
-    int componentSize[MAXN];
+private:
+    vector<int> parent;
+    vector<int> componentSize;
     int n, numberOfDisjointSets;
-
+public:
     UnionFind(int _n) {
-        for (int i = 0; i <= n; i++) {
-            parent[i] = i;
-            componentSize[i] = 1;
-        }
         n = _n;
+        for (int i = 0; i < n; i++) {
+            parent.push_back(i);
+            componentSize.push_back(1);
+        }
         numberOfDisjointSets = n;
     }
 
@@ -37,5 +37,9 @@ public:
 
     bool isSameComponent(int x, int y) {
         return (findParent(x) == findParent(y));
+    }
+
+    int getNumberOfDisjointSets() {
+        return numberOfDisjointSets;
     }
 };
