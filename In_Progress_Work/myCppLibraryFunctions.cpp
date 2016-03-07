@@ -24,6 +24,17 @@ void getDivisors(int n, vector<int> &divisors) {
     sort(divisors.begin(), divisors.end());
 }
 
+
+/* returns true if s is a palindrome, false otherwise */
+bool isPalindrome(string &s) {
+    int N = (int) s.length(), halfLen = N >> 1;
+    for (int i = 0; i < halfLen; i++)
+        if (s[i] != s[N-1-i])
+            return false;
+    return true;
+}
+
+
 /* found @ http://www.geeksforgeeks.org/searching-for-patterns-set-3-rabin-karp-algorithm/ */
 /* q is a prime number (105943 works ok for smaller inputs) */
 bool rabinKarp(string &s, string &pattern, int alphabetSize, int q) {
@@ -61,3 +72,84 @@ bool rabinKarp(string &s, string &pattern, int alphabetSize, int q) {
     }
     return false;
 }
+
+
+/* KMP */
+void computePrefixSuffixTable(vector<int> &t, string &p) {
+    int N = (int) p.length();
+    int pos = 2;
+    int cnd = 0;
+
+    t.assign(N, 0);
+    t[0] = -1;
+    t[1] = 0;
+    while (pos < N) {
+        if (p[pos-1] == p[cnd]) {
+            t[pos] = cnd + 1;
+            cnd++;
+            pos++;
+        } else if (cnd > 0) {
+            cnd = t[cnd];
+        } else {
+            t[pos] = 0;
+            pos++;
+        }
+    }
+}
+
+
+int kmpStringSearch(string &s, string &p) {
+    vector<int> t;
+    computePrefixSuffixTable(t, p);
+    int i = 0, m = 0, N = (int) s.length(), NP = (int) p.length();
+    while (m + i < N) {
+        if (p[i] == s[m+i]) {
+            if (i == NP - 1) {
+                return m;
+            }
+            i++;
+        } else {
+            if (t[i] > 0) {
+                m = m + i - t[i];
+                i = t[i];
+            } else {
+                i = 0;
+                m++;
+            }
+        }
+    }
+    return N;
+}
+/* END KMP */
+
+
+/* searches an nrows x ncols "matrix" of chars in all 8 possible directions for string s */
+bool searchMatrix(vector<string> &v, int nrows, int ncols, string &s, int &solnRow, int &solnCol) {
+    const int N = 8;
+    int row, col, sindex, len = (int) s.length();
+    int rowInc[] = {0, -1, -1, -1, 0, 1, 1, 1};
+    int colInc[] = {-1, -1, 0, 1, 1, 1, 0, -1};
+
+    for (int i = 0; i < nrows; i++) {
+        for (int j = 0; j < ncols; j++) {
+            if (tolower(v[i][j]) == tolower(s[0])) {
+                for (int k = 0; k < N; k++) {
+                    row = i; col = j; sindex = 0;
+                    while (row >= 0 and row < nrows and col >= 0 and col < ncols and
+                            tolower(v[row][col]) == tolower(s[sindex])) {
+                        sindex++;
+                        if (sindex == len) {
+                            solnRow = i + 1;
+                            solnCol = j + 1;
+                            return true;
+                        }
+                        row += rowInc[k];
+                        col += colInc[k];
+                    }
+                }
+            }
+        }
+    }
+    return false;
+}
+
