@@ -197,3 +197,92 @@ void computeAndPrintTheLongestCommonSubsequence(vector<string> &va, vector<strin
     cout << endl;
 }
 
+
+/* EDIT DISTANCE */
+#define MATCH 0
+#define INSERT 1
+#define DELETE 2
+
+struct Cell {
+    int parent;
+    int cost;
+};
+
+int match(char ca, char cb) {
+    if (ca == cb) return 0;
+    return 1;
+}
+
+int indel(char c) {
+    return 1;
+}
+
+void matchOut(char ca, char cb) {
+    if (ca == cb) {
+        cout << "match " << ca << endl;
+    } else {
+        cout << "replace " << ca << " with " << cb << endl;
+    }
+}
+
+void insertOut(char c) {
+    cout << "insert " << c << endl;
+}
+
+void deleteOut(char c) {
+    cout << "delete " << c << endl;
+}
+
+void printEditDistanceSoln(vector<vector<Cell> > &dp, string &s, string &t, int i, int j) {
+    if (dp[i][j].parent == -1) return;
+    if (dp[i][j].parent == MATCH) {
+        printEditDistanceSoln(dp, s, t, i-1, j-1);
+        matchOut(s[i], t[j]);
+    } else if (dp[i][j].parent == INSERT) {
+        printEditDistanceSoln(dp, s, t, i, j-1);
+        insertOut(t[j]);
+    } else { /* must be delete */
+        printEditDistanceSoln(dp, s, t, i-1, j);
+        deleteOut(s[i]);
+    }
+}
+
+/* computes the minimum number of edits to transform string s into t */
+int computeEditDistance(string &str, string &pat) {
+    string s = " " + str;
+    string t = " " + pat;
+    int n = (int) s.length();
+    int m = (int) t.length();
+    vector<vector<Cell> > dp(n + 1, vector<Cell>(m + 1));
+    int opt[3];
+    for (int i = 0; i < n; i++) {
+        dp[0][i].cost = i;
+        dp[0][i].parent = (i > 0) ? INSERT : -1;
+    }
+    for (int i = 0; i < m; i++) {
+        dp[i][0].cost = i;
+        dp[i][0].parent = (i > 0) ? DELETE : -1;
+    }
+    for (int i = 1; i < n; i++) {
+        for (int j = 1; j < m; j++) {
+            opt[MATCH] = dp[i-1][j-1].cost + match(s[i], t[j]);
+            opt[INSERT] = dp[i][j-1].cost + indel(t[j]);
+            opt[DELETE] = dp[i-1][j].cost + indel(s[i]);
+
+            dp[i][j].cost = opt[MATCH];
+            dp[i][j].parent = MATCH;
+            for (int k = INSERT; k <= DELETE; k++) {
+                if (opt[k] < dp[i][j].cost) {
+                    dp[i][j].cost = opt[k];
+                    dp[i][j].parent = k;
+                }
+            }
+        }
+    }
+    printEditDistanceSoln(dp, s, t, n-1, m-1);
+    return dp[n][m].cost;
+}
+/* END EDIT DISTANCE */
+
+
+
