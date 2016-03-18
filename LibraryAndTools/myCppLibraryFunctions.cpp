@@ -12,6 +12,19 @@ void primeSieve(int N, vector<bool> &primes) {
     }
 }
 
+/* returns the nth fibonacci */
+long long fib(long long n) {
+    if (n == 0) return 0;
+
+	long long prevPrev = 0, prev = 1, f;
+    for (int i = 2; i < n; i++) {
+		f = prevPrev + prev;
+		prevPrev = prev;
+		prev = f;
+    }
+    return prevPrev + prev;
+}
+
 /* returns number of divisors and places divisors in divisors vector */
 void getDivisors(int n, vector<int> &divisors) {
     divisors.clear();
