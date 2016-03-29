@@ -298,4 +298,25 @@ int computeEditDistance(string &str, string &pat) {
 /* END EDIT DISTANCE */
 
 
+/* intersection detection */
+bool circle_contains(double x0, double y0, double x1, double y1, double r) {
+    return  r*r > (x0 - x1)*(x0 - x1) + (y0 - y1)*(y0 - y1);
+}
+
+double sign(double x0, double y0, double x1, double y1, double x2, double y2) {
+
+    return (x0 - x2) * (y1 - y2) - (x1 - x2) * (y0 - y2);
+}
+
+bool triangle_contains(double x0, double y0, double x1, double y1, double x2, double y2, double x3, double y3) {
+
+    bool b1, b2, b3;
+
+    b1 = sign(x3, y3, x0, y0, x1, y1) < 0.0f;
+    b2 = sign(x3, y3, x1, y1, x2, y2) < 0.0f;
+    b3 = sign(x3, y3, x2, y2, x0, y0) < 0.0f;
+
+    return ((b1 == b2) && (b2 == b3));
+}
+
 
