@@ -319,4 +319,31 @@ bool triangle_contains(double x0, double y0, double x1, double y1, double x2, do
     return ((b1 == b2) && (b2 == b3));
 }
 
+/* ALTERNATE INTERSECTION DETECTION */
+struct Point{
+    double x,y;
+    Point() {}
+    Point(double _x, double _y) : x(_x), y(_y) {}
+};
+
+double signedArea(Point &p1, Point &p2, Point &p3){
+    return (p1.x * p2.y + p2.x * p3.y + p3.x * p1.y - p1.y * p2.x - p2.y * p3.x - p3.y * p1.x) / 2;
+}
+
+bool ccw(Point &p1, Point &p2, Point &p3){
+    return signedArea(p1, p2, p3) > -1e-9;
+}
+
+bool inTriangle(Point p, vector<Point> &poly){
+    for (int i = 1; i < (int) poly.size(); i++)
+        if (!ccw(poly[i-1], poly[i], p))
+            return false;
+
+    if (!ccw(poly[2], poly[0], p))
+        return false;
+
+    return true;
+}
+
+/* END ALTERNATE INTERSECTION DETECTION */
 
