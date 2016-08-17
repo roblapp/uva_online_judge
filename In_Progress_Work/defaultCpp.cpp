@@ -3,7 +3,8 @@
 
 using namespace std;
 
-int main() {
+int main()
+{
     ifstream read("test.txt");
 	//ofstream out("test_out.txt");
 
